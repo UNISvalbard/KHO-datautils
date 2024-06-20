@@ -107,7 +107,7 @@ def oneDayThumbnails(year,month,day):
             d.text((440,3)," N ", font=font2, fill=(255,255,255))
             d.text((440,3+16),"E W ", font=font2, fill=(255,255,255))
             d.text((440,3+16+16)," S ", font=font2, fill=(255,255,255))
-            im.save(auroraXthumb,"JPEG")
+            im.save(auroraXthumb,"JPEG", quality=85, optimize=True)
             print(f'Created {auroraXname}')
         
 
