@@ -28,7 +28,7 @@ PATH="$DATADIR/$YEAR/$MONTH/$DAY"
 
 FULLNAME="$PATH/$IMAGENAME"
 
-# No need to store data onto the disk, so used shared memory ("ramdisk")
+# No need to store temporary data onto the disk, so used shared memory ("ramdisk")
 cd /dev/shm
 
 # Capture an image, crop and correct the EXIF data to show the capture time
