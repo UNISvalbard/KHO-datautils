@@ -15,23 +15,26 @@ import re
 import datetime as dt
 from PIL import Image
 import matplotlib.pyplot as plt
+import shutil
 
 
 def keogramOneDaySony(year,month,day):
-    #keoname=f'LYR-Sony-{year}{month:02}{day:02}.png'
-    keoname=f'LYR-KHO-{year}{month:02}{day:02}.jpg'
+    monthpath=os.path.join('/','home','mikkos','Data',f'{year:04}',f'{month:02}')
+    daypath=os.path.join(monthpath,f'{day:02}')
+
+    keoname=os.path.join(monthpath,f'LYR-Sony-{year}{month:02}{day:02}.jpg')
     if os.path.isfile(keoname)==True:
-        print(f'Keogram {keoname} exists, skipping...')
+        #print(f'Keogram {keoname} exists, skipping...')
         return
-    basepath=os.path.join("D:\\","KHO","Sony",f'{year:04}', f'{month:02}',
-                          f'{day:02}','Images')
-    imagefiles=glob.glob(os.path.join(basepath,"*.jpg"))
+
+    webpath=os.path.join('/','mnt','khoweb','kho','Keograms','Sony')
+    webname=os.path.join(webpath,f'LYR-Sony-{year}{month:02}{day:02}.jpg')
+
+    imagefiles=glob.glob(os.path.join(daypath,"*.jpg"))
     imagefiles.sort()
 
     # The Sony A7S filename convention is fixed to
-    # LYR-Sony-DDMMYY_HHMMSS.jpg, so, for example,
-    # LYR-Sony-010124_032032.jpg refers to an image captured on 1 Jan, 2024
-    # at 03:20:32 UT
+    # LYR-Sony-YYYYMMDD__HHMMSS.jpg, so, for example,
     #
 
     # The keogram is simply a fixed size 24-h plot with one-minute resolution.
@@ -48,19 +51,18 @@ def keogramOneDaySony(year,month,day):
         # First check whether the name is of correct format and then check
         # for a valid date and time before continuing with the keogram
 
-        filepattern=r"LYR-Sony-(\d\d)(\d\d)(\d\d)_(\d\d)(\d\d)(\d\d).jpg"
+        filepattern=r"LYR-Sony-(\d\d\d\d)(\d\d)(\d\d)_(\d\d)(\d\d)(\d\d).jpg"
         checkname=re.match(filepattern, thisfile)
         if checkname == False:
             continue
 
         # There is probably a more stylish way to do this in python
         # but at least this is easy to understand...
-
         validname=re.split(filepattern, thisfile)
 
-        fileday=int(validname[1])
+        fileday=int(validname[3])
         filemonth=int(validname[2])
-        fileyear=2000+int(validname[3])
+        fileyear=int(validname[1])
 
         filehh=int(validname[4])
         filemm=int(validname[5])
@@ -84,20 +86,20 @@ def keogramOneDaySony(year,month,day):
         index=min(60*filehh+filemm+round(filess/60),24*60-1)
 
         if keogram_slice_used[index]==1:
-            print("Skipping",thisfile)
+            # print("Skipping",thisfile)
             continue
 
-        print(i,datefromfile,index)
+        # print(i,datefromfile,index)
 
-        # The following should be replaced with a code that only takes
-        # the slice *inside* of the field-of-view, a simple resize is not
-        # good enough!!
-        # So, read the full image and then take a slice and use interpolation
-        # to get the size to match the keogram height
+        # The following should probably be replaced with a code that only takes
+        # the slice *inside* of the field-of-view.
+        try:
+            im=np.asarray(Image.open(imagefiles[i]).resize((700,700)))
+            slice=im[22:692,350,:]
+        except:
+            print('Problems with',thisfile)
+            continue
 
-        im=np.asarray(Image.open(imagefiles[i]).resize((700,700)))
-
-        slice=im[22:692,350,:]
         keogram[:,index,:]=slice
         keogram_slice_used[index]=1
         filesread=filesread+1
@@ -128,12 +130,31 @@ def keogramOneDaySony(year,month,day):
 
     plt.savefig(keoname, dpi=mydpi)
 
+    # Copy to web
+    if os.path.isfile(webname)==True:
+        #print(f'Keogram {webname} exists, skipping...')
+        return
+
+    shutil.copyfile(keoname,webname)
+
+
+
 #=====================================================================
-# Manual keograms before archiving to NIRD...
+# Create keograms for the past two weeks only. If there are obvious
+# gaps in the daily keograms, then one should be able to figure it
+# out within two weeks, right? :-)
+# Any missing keograms can/should be then created manually.
 
-year=2024
-month=3
+#year=2024
+#month=10
 
-for day in np.arange(1,7):
+mydt=dt.datetime.now(dt.UTC)
+
+for i in range(1,15):
+    checkdt=mydt-dt.timedelta(days=i)
+    year=checkdt.year
+    month=checkdt.month
+    day=checkdt.day
     keogramOneDaySony(year,month,day)
+
 
