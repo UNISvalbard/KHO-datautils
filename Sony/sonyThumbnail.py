@@ -14,7 +14,7 @@ import os
 import re
 import datetime as dt
 from PIL import Image, ImageDraw, ImageFont
-import cv2
+#import cv2
 
 def oneThumbnail(imagefile,overWriteExisting=False):
     auroraXpath=os.path.join('/','home','mikkos','Data','Quicklooks')
@@ -68,31 +68,23 @@ def oneThumbnail(imagefile,overWriteExisting=False):
     except FileExistsError:
         pass
 
-    # Our scientists preferred the CV2 library to PIL for resizing the images...
-    image=cv2.imread(imagefile)
-    w=480
-    h=480
-    resized_image=cv2.resize(image,(w,h),interpolation=cv2.INTER_NEAREST)
-    #resized_image=cv2.resize(image,(w,h),interpolation=cv2.INTER_LANCZOS4)
-
     # Add captions: the text writing routines in PIL are much more
     # flexible...
-    cv2_im=cv2.cvtColor(resized_image,cv2.COLOR_BGR2RGB)
-    im=Image.fromarray(cv2_im)
 
-    font1base=r"/usr/share/fonts/opentype/noto" 
-    font2base=r"/usr/share/fonts/truetype/ubuntu"
-    font1=ImageFont.truetype(os.path.join(font1base,"NotoSansCJK-Bold.ttc"),20)
-    font2=ImageFont.truetype(os.path.join(font2base,"UbuntuMono-R.ttf"),18)
-    d=ImageDraw.Draw(im)
-    d.text((5,3),"UNIS/KHO", font=font1, fill=(255,255,255))
-    d.text((5,30),"Sony A7s", font=font1, fill=(255,255,255))
-    d.text((5,460),f'{fileyear}-{filemonth:02}-{fileday:02}', font=font2, fill=(255,255,255))
-    d.text((365,460),f'{filehh:02}:{filemm:02}:{filess:02} UT', font=font2, fill=(255,255,255))
-    d.text((440,3)," N ", font=font2, fill=(255,255,255))
-    d.text((440,3+16),"E W", font=font2, fill=(255,255,255))
-    d.text((440,3+16+16)," S ", font=font2, fill=(255,255,255))
-    im.save(auroraXthumb,"JPEG", quality=85, optimize=True)
+    with Image.open(imagefile).resize((480,480)) as im:
+        font1base=r"/usr/share/fonts/opentype/noto" 
+        font2base=r"/usr/share/fonts/truetype/ubuntu"
+        font1=ImageFont.truetype(os.path.join(font1base,"NotoSansCJK-Bold.ttc"),20)
+        font2=ImageFont.truetype(os.path.join(font2base,"UbuntuMono-R.ttf"),18)
+        d=ImageDraw.Draw(im)
+        d.text((5,3),"UNIS/KHO", font=font1, fill=(255,255,255))
+        d.text((5,30),"Sony A7s", font=font1, fill=(255,255,255))
+        d.text((5,460),f'{fileyear}-{filemonth:02}-{fileday:02}', font=font2, fill=(255,255,255))
+        d.text((365,460),f'{filehh:02}:{filemm:02}:{filess:02} UT', font=font2, fill=(255,255,255))
+        d.text((440,3)," N ", font=font2, fill=(255,255,255))
+        d.text((440,3+16),"E W", font=font2, fill=(255,255,255))
+        d.text((440,3+16+16)," S ", font=font2, fill=(255,255,255))
+        im.save(auroraXthumb,"JPEG", quality=85, optimize=True)
     print(f'Created {auroraXthumb}')
 
 
@@ -101,6 +93,6 @@ if __name__ == "__main__":
         sys.exit("sonyThumbnail [filename]")
 
     imagefile=sys.argv[1]
-    oneThumbnail(imagefile)
+    oneThumbnail(imagefile,overWriteExisting=True)
 
 
