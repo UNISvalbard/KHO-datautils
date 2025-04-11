@@ -1,10 +1,10 @@
 # Simple scripts for capturing all-sky images
 
 A common task for auroral imagers is to capture images at a fixed cadence whenever the Sun is more than e.g. 10 degrees below the horizon. 
-The "Quicklooper" comprises of a couple of scripts that provide a very minimal yet working setup.
+The "Quicklooper" comprises a couple of scripts that provide a very minimal yet working setup.
 
 The key component is a single command-line tool `oneImage.sh` that uses `gphoto2` to acquire an image and download it to the computer. 
-The filenamin convention g and directory structures are strict and automatically defined from the UT-time of the computer.
+The filenaming convention and directory structures are strict and automatically defined from the UT-time of the computer.
 If the camera does not have a GPS for correct date and time (like our first generation Sony A7s), one should "fix" the EXIF-data 
 to avoid confusion between EXIF-data and filename. This is easy to do with `jhead`.
 
