@@ -20,8 +20,11 @@ for dataMonth in range(1, 3):
         auroraxpath = os.path.join('/Data', 'AuroraX', 'unis', 'kho_sony', 
                                    str(dataYear), f'{dataMonth:02d}', f'{dataDay:02d}')
         
-        if not os.path.exists(auroraxpath):
-            os.makedirs(auroraxpath)
+        if os.path.exists(auroraxpath):
+            print(f'Data exists, skipping {auroraxpath}')
+            continue
+        
+        os.makedirs(auroraxpath)
         
         framepath = os.path.join('/dev/shm/Frames') #auroraxpath, 'Frames')
         if not os.path.exists(framepath):
