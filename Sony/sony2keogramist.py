@@ -55,7 +55,7 @@ for dataMonth in range(1, 3):
             print('Timelist ready!')
         
         print('Creating keogram...')
-        keogram = np.ones((480, 8640, 3), dtype=np.uint8)  # Empty keogram
+        keogram = 255 * np.ones((480, 8640, 3), dtype=np.uint8)  # Empty and white keogram
         
         ephname = os.path.join(auroraxpath, f'ephemeris_kho_sony_{dataYear}{dataMonth:02d}{dataDay:02d}.txt')
         
@@ -77,7 +77,7 @@ for dataMonth in range(1, 3):
                 deltas = np.abs(thisseconds - ts)
                 min_delta, ind = np.min(deltas), np.argmin(deltas)
                 
-                thisframe = np.ones((480, 480, 3), dtype=np.uint8)
+                thisframe = 255 * np.ones((480, 480, 3), dtype=np.uint8)   # Empty white videoframe
                 if min_delta < 20:
                     # Read the image corresponding to the minimum delta
                     filename = img_files[ind]
