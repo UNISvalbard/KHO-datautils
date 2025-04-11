@@ -14,6 +14,10 @@ for dataMonth in range(1, 3):
         
         imgpath = os.path.join('/Data',  'Quicklooks', str(dataYear), 
                                f'{dataMonth:02d}', f'{dataDay:02d}')
+        if os.path.exists(auroraxpath):
+            print(f'Data exists, skipping {auroraxpath}')
+            continue
+
         
         img_files = [f for f in os.listdir(imgpath) if f.endswith('.jpg')]
         
