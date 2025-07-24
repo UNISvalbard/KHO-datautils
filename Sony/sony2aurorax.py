@@ -40,7 +40,7 @@ def oneDayThumbnails(year,month,day,overWriteExisting=False):
 
         filepattern=r"LYR-Sony-(\d\d\d\d)(\d\d)(\d\d)_(\d\d)(\d\d)(\d\d).jpg"
         checkname=re.match(filepattern, thisfile)
-        if checkname == False:
+        if checkname == None:
             continue
 
         # There is probably a more stylish way to do this in python
