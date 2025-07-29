@@ -5,19 +5,23 @@ from PIL import Image
 import shutil
 import time
 
-dataYear = 2025
+dataYear = 2023
+cadence=12 # seconds, either 10s or 12s depending on the year
 
-for dataMonth in range(1, 3):
-    for dataDay in range(1,31):
+if cadence==12:
+    totalframes=7200
+if cadence==10:
+    totalframes=8640
+
+for dataMonth in range(1, 2):
+    for dataDay in range(1,32):
         ts = None
         start_time = time.time()
         
         imgpath = os.path.join('/Data',  'Quicklooks', str(dataYear), 
                                f'{dataMonth:02d}', f'{dataDay:02d}')
-        if os.path.exists(auroraxpath):
-            print(f'Data exists, skipping {auroraxpath}')
+        if not os.path.exists(imgpath):
             continue
-
         
         img_files = [f for f in os.listdir(imgpath) if f.endswith('.jpg')]
         
@@ -27,7 +31,7 @@ for dataMonth in range(1, 3):
         if os.path.exists(auroraxpath):
             print(f'Data exists, skipping {auroraxpath}')
             continue
-        
+
         os.makedirs(auroraxpath)
         
         framepath = os.path.join('/dev/shm/Frames') #auroraxpath, 'Frames')
@@ -59,7 +63,7 @@ for dataMonth in range(1, 3):
             print('Timelist ready!')
         
         print('Creating keogram...')
-        keogram = 255 * np.ones((480, 8640, 3), dtype=np.uint8)  # Empty and white keogram
+        keogram = 255*np.ones((480, totalframes, 3), dtype=np.uint8)  # Empty white keogram
         
         ephname = os.path.join(auroraxpath, f'ephemeris_kho_sony_{dataYear}{dataMonth:02d}{dataDay:02d}.txt')
         
@@ -76,12 +80,12 @@ for dataMonth in range(1, 3):
             # 12-s intervals = 5 images/minute -> 5*60*24=7200 images per day
             # 10-s intervals = 6 images/minute -> 6*60*24=8640 images per day
 
-            for thistime in range(8640):  # 0 to 7199 (for each 12 seconds)
-                thisseconds = thistime * 10  # Each time slot corresponds to 12s
+            for thistime in range(totalframes):  # 0 to 7199 (for each 12 seconds)
+                thisseconds = thistime * cadence  # Each time slot corresponds to 10 or 12 seconds
                 deltas = np.abs(thisseconds - ts)
                 min_delta, ind = np.min(deltas), np.argmin(deltas)
                 
-                thisframe = 255 * np.ones((480, 480, 3), dtype=np.uint8)   # Empty white videoframe
+                thisframe = 255*np.ones((480, 480, 3), dtype=np.uint8) # Empty white videoframe
                 if min_delta < 20:
                     # Read the image corresponding to the minimum delta
                     filename = img_files[ind]
@@ -108,7 +112,7 @@ for dataMonth in range(1, 3):
 
         os.system(f'/home/mikkos/bin/createMovie2pass.sh {mp4name}')
         os.system('rm -rf /dev/shm/Frames')
-        os.system('rm ffmpeg2pass*.log*')
+        #os.system('rm ffmpeg2pass*.log*')
         elapsed_time = time.time() - start_time
         print(f'Time taken: {elapsed_time:.2f} seconds')
 
