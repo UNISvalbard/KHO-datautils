@@ -15,7 +15,6 @@ import numpy as np
 import re
 import datetime as dt
 from PIL import Image, ImageDraw, ImageFont
-import cv2
 import shutil
 
 def oneThumbnail(imagefile,overWriteExisting=False):
@@ -68,33 +67,28 @@ def oneThumbnail(imagefile,overWriteExisting=False):
     except FileExistsError:
         pass
 
-    # Our scientists preferred the CV2 library to PIL for resizing the images...
-    image=cv2.imread(imagefile)
-    w=480
-    h=480
-    resized_image=cv2.resize(image,(w,h),interpolation=cv2.INTER_NEAREST)
-    #resized_image=cv2.resize(image,(w,h),interpolation=cv2.INTER_LANCZOS4)
 
     # Add captions: the text writing routines in PIL are much more
     # flexible...
-    cv2_im=cv2.cvtColor(resized_image,cv2.COLOR_BGR2RGB)
-    im=Image.fromarray(cv2_im)
+    # If the image is complete white/black, then PIL may treat the image as greyscale image,
+    # so ensure it is read as a colour image.
 
-    font1base=r"/usr/share/fonts/opentype/noto"
-    font2base=r"/usr/share/fonts/truetype/ubuntu"
-    font1=ImageFont.truetype(os.path.join(font1base,"NotoSansCJK-Bold.ttc"),20)
-    font2=ImageFont.truetype(os.path.join(font2base,"UbuntuMono-R.ttf"),18)
-    d=ImageDraw.Draw(im)
-    d.text((5,3),"UNIS/KHO", font=font1, fill=(255,255,255))
-    d.text((5,30),"Sony A7s", font=font1, fill=(255,255,255))
-    d.text((5,460),f'{fileyear}-{filemonth:02}-{fileday:02}', font=font2, fill=(255,255,255))
-    d.text((365,460),f'{filehh:02}:{filemm:02}:{filess:02} UT', font=font2, fill=(255,255,255))
-    d.text((440,3)," N ", font=font2, fill=(255,255,255))
-    d.text((440,3+16),"E W", font=font2, fill=(255,255,255))
-    d.text((440,3+16+16)," S ", font=font2, fill=(255,255,255))
-    im.save(auroraXthumb,"JPEG", quality=85, optimize=True)
-    shutil.copy(auroraXthumb,"/mnt/khoweb/kho/Quicklooks/kho_sony.jpg")
-    print(f'Created {auroraXthumb} (copied to web)')
+    with Image.open(imagefile).convert("RGB").resize((480,480),resample=Image.Resampling.LANCZOS) as im:
+        font1base=r"/usr/share/fonts/opentype/noto"
+        font2base=r"/usr/share/fonts/truetype/ubuntu"
+        font1=ImageFont.truetype(os.path.join(font1base,"NotoSansCJK-Bold.ttc"),20)
+        font2=ImageFont.truetype(os.path.join(font2base,"UbuntuMono-R.ttf"),18)
+        d=ImageDraw.Draw(im)
+        d.text((5,3),"UNIS/KHO", font=font1, fill=(255,255,255))
+        d.text((5,30),"Sony A7s", font=font1, fill=(255,255,255))
+        d.text((5,460),f'{fileyear}-{filemonth:02}-{fileday:02}', font=font2, fill=(255,255,255))
+        d.text((365,460),f'{filehh:02}:{filemm:02}:{filess:02} UT', font=font2, fill=(255,255,255))
+        d.text((440,3)," N ", font=font2, fill=(255,255,255))
+        d.text((440,3+16),"E W", font=font2, fill=(255,255,255))
+        d.text((440,3+16+16)," S ", font=font2, fill=(255,255,255))
+        im.save(auroraXthumb,"JPEG", quality=85, optimize=True)
+        shutil.copy(auroraXthumb,"/mnt/khoweb/kho/Quicklooks/kho_sony.jpg")
+        print(f'Created {auroraXthumb} (copied to web)')
  
 """
 Keep an eye on changes of a file, create new thumbnails when necessary.
