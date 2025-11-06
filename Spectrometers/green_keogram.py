@@ -232,11 +232,12 @@ def make_green_keogram(filename,destination, overwrite=False):
 if __name__ == "__main__":
 
     sourcepath=os.path.join('E:\\','Incoming','saasdata','data26','Green')
-    sourcepath=os.path.join('D:\\','KHO','saasdata','data24','Green')
+    #sourcepath=os.path.join('D:\\','KHO','saasdata','data24','Green')
     destination=os.path.join('D:\\','KHO','saasdata','Keograms','Green')
     
     
     files=glob.glob(os.path.join(sourcepath,'??????G2.lyr'))
     for filename in files:
         print(f"Processing {filename}...")
+
         make_green_keogram(filename, destination)
