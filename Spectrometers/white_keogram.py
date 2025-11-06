@@ -204,14 +204,16 @@ def make_white_keogram(filename,destination):
 #------------------
 # - make a keogram from all white data
 
-#sourcepath=os.path.join('D:\\','KHO','saasdata','data25','White')
-sourcepath=os.path.join('E:\\','Incoming','saasdata','data26','White')
-destination=os.path.join('D:\\','KHO','saasdata','Keograms','White')
+if __name__ == "__main__":
 
-files=glob.glob(os.path.join(sourcepath,'s??????2.lyr'))
-
-for datafile in files:
-    #datafile='s0101232.lyr'
-    print(f'Processing {datafile}')
-    filename=os.path.join('D:\\','KHO','Spectrometers','Software',datafile)
-    make_white_keogram(filename,destination)
+    #sourcepath=os.path.join('D:\\','KHO','saasdata','data25','White')
+    sourcepath=os.path.join('E:\\','Incoming','saasdata','data26','White')
+    destination=os.path.join('D:\\','KHO','saasdata','Keograms','White')
+    
+    files=glob.glob(os.path.join(sourcepath,'s??????2.lyr'))
+    
+    for datafile in files:
+        #datafile='s0101232.lyr'
+        print(f'Processing {datafile}')
+        filename=os.path.join('D:\\','KHO','Spectrometers','Software',datafile)
+        make_white_keogram(filename,destination)
