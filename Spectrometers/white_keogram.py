@@ -122,7 +122,16 @@ def make_white_keogram(filename,destination):
         for key, value in header.items():
             print(f"{key}: {value}")
         raise Exception(f'Invalid date in {filename}')
-    
+
+    # Skip today's and yesterday's data which may still be incomplete
+    # due to file transfer scheduling...
+    today=dt.datetime.utcnow()
+    filedate=dt.datetime(fileyear,filemonth,fileday)
+    timedelta=today-filedate
+    if timedelta.days<2:
+        print("...skipping too recent data")
+        return
+
     lambda_min=header['startwave']/10
     lambda_max=header['stopwave']/10
     

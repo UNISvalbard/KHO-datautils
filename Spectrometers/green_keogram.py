@@ -136,6 +136,14 @@ def make_green_keogram(filename,destination, overwrite=False):
             print(f"{key}: {value}")
         raise Exception(f'Invalid date in {filename}')
     
+    # Skip today's and yesterday's data which may still be incomplete
+    # due to file transfer scheduling...
+    today=dt.datetime.utcnow()
+    filedate=dt.datetime(fileyear,filemonth,fileday)
+    timedelta=today-filedate
+    if timedelta.days<2:
+        print("...skipping too recent data")
+        return
 
     keogram1=np.zeros((708,24*60))  # This is for Setup #1 (top plot)
     keogram2=np.zeros((814,24*60))  # This is for Setup #2 (bottom plot)
@@ -239,5 +247,4 @@ if __name__ == "__main__":
     files=glob.glob(os.path.join(sourcepath,'??????G2.lyr'))
     for filename in files:
         print(f"Processing {filename}...")
-
         make_green_keogram(filename, destination)
