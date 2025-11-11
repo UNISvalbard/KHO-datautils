@@ -13,8 +13,7 @@ import numpy as np
 import os
 import re
 import datetime as dt
-from PIL import Image, ImageDraw, ImageFont
-#import cv2
+from PIL import Image, ImageDraw, ImageFont, ExifTags
 
 def oneThumbnail(imagefile,overWriteExisting=False):
     auroraXpath=os.path.join('/','home','mikkos','Data','Quicklooks')
@@ -29,7 +28,7 @@ def oneThumbnail(imagefile,overWriteExisting=False):
 
     filepattern=r"LYR-Sony-(\d\d\d\d)(\d\d)(\d\d)_(\d\d)(\d\d)(\d\d).jpg"
     checkname=re.match(filepattern, thisfile)
-    if checkname == None:
+    if checkname == False:
         return
 
     # There is probably a more stylish way to do this in python
@@ -72,6 +71,7 @@ def oneThumbnail(imagefile,overWriteExisting=False):
     # flexible...
 
     with Image.open(imagefile).resize((480,480)) as im:
+        exif_data=im.getexif()
         font1base=r"/usr/share/fonts/opentype/noto" 
         font2base=r"/usr/share/fonts/truetype/ubuntu"
         font1=ImageFont.truetype(os.path.join(font1base,"NotoSansCJK-Bold.ttc"),20)
@@ -84,7 +84,7 @@ def oneThumbnail(imagefile,overWriteExisting=False):
         d.text((440,3)," N ", font=font2, fill=(255,255,255))
         d.text((440,3+16),"E W", font=font2, fill=(255,255,255))
         d.text((440,3+16+16)," S ", font=font2, fill=(255,255,255))
-        im.save(auroraXthumb,"JPEG", quality=85, optimize=True)
+        im.save(auroraXthumb,"JPEG", quality=85, optimize=True, exif=exif_data)
     print(f'Created {auroraXthumb}')
 
 
