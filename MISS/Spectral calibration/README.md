@@ -9,9 +9,8 @@ is also a python example using the parameters determined using Matlab.
 
 The basic form of the image is scan angle i.e. position along the meridian versus wavelength. For each row, the script searches the columns for each intensity peak.
 Then the detected column locations are used to estimate parameters for a polynomial fit. Eventually a new spectral image is constructed where the polynomials are used
-for correcting the distortion. Some of the values were obtained by zooming into the Matlab plots.
+for correcting the distortion. Initial values for column centres were obtained either by zooming into images to extract pixel coordinates.
 
 ## MISS-1 vs. MISS-2
 
-There are two "identical" MISSes. As the alignment of optics varies between the units, there are different calibration coefficients for each. The example codes
-used data from the first MISS i.e. MISS-1, so the same routines cannot be used with MISS-2. 
+There are two "identical" MISSes. As the alignment of optics varies between the units, there are different calibration coefficients for each. The first examples used data from the first MISS i.e. MISS-1 and the Matlab code needs to be updated to include MISS-2.
