@@ -41,6 +41,7 @@ def detect_emission_line(rows,col_centre, offset, image):
     return p_fit
 
 missFile="MISS2-20251115-072315.png"
+missFile="MISS2-20251113-050315.png"
 missImage=np.array(Image.open(missFile))
 
 # The raw data has 1039 rows with 347 columns, do some flipping 
@@ -49,9 +50,10 @@ thisimage=np.fliplr(np.rot90(missImage))
 """
 There are several auroral spectral lines visible in the image
 Approx. col 558 - 557.7nm
-            668 - 589.0nm (Sodium line, light pollution from Mine 7)
+             88 - 426.8nm
             807 - 630.0nm
             829 - 636.4nm
+            668 - 589.0nm (Sodium line, light pollution from Mine 7)
 """
 
 # Get the basename for the file for the plot title
@@ -85,6 +87,10 @@ p_red=detect_emission_line(rows,col_centre,offset, smoothimage)
 col_centre=829
 p_red2=detect_emission_line(rows,col_centre,offset, smoothimage)
 
+# Blue line
+col_centre=84
+p_blue=detect_emission_line(rows,col_centre, offset, smoothimage)
+
 # Plot the spectral image
 
 fig, axMiss = plt.subplots(figsize=(10,6))
@@ -105,30 +111,33 @@ axMiss.plot(xred,y,color='r')
 xred2=p_red2(y)
 axMiss.plot(xred2,y,color='m')
 
+xblue=p_blue(y)
+axMiss.plot(xblue,y,color='b')
+
 """
-Do a quick estimate of where the auroral blue (427.8nm) and Sodium 
-line (589.0nm) should be in the image
-- use the green, red and red2 locations for each row to compute a linear fit
+Do a quick estimate of where the Sodium line (589.0nm) should be in the image
+- use the blue, green, red and red2 locations for each row to compute a linear fit
   in the column direction
 - estimate the location (pixel columns) given the wavelength 589.0nm
 """
-col_blue=[]
+#col_blue=[]
 col_sodium=[]
 for thisrow in rows:
     xgreen=p_green(thisrow)
     xred=p_red(thisrow)
     xred2=p_red2(thisrow)
-    fit_lambda=np.polyfit([557.7, 630.0, 636.5],[xgreen,xred,xred2],1)
+    xblue=p_blue(thisrow)
+    fit_lambda=np.polyfit([427.8, 557.7, 630.0, 636.5],[xblue, xgreen,xred,xred2],1)
     p_lambda=np.poly1d(fit_lambda)
-    col_blue.append(p_lambda(427.8))
+#    col_blue.append(p_lambda(427.8))
     col_sodium.append(p_lambda(589.0))
     wavelengths=np.polyfit([xgreen,xred,xred2],[557.7, 630.0, 636.5],1)
     p_waves=np.poly1d(wavelengths)
 
-z=np.polyfit(rows, col_blue,2)
-p_blue=np.poly1d(z)
-x=p_blue(y)
-axMiss.plot(x,y,color='b')
+#z=np.polyfit(rows, col_blue,2)
+#p_blue=np.poly1d(z)
+#x=p_blue(y)
+#axMiss.plot(x,y,color='b')
 
 z=np.polyfit(rows, col_sodium,2)
 p_sodium=np.poly1d(z)
@@ -152,3 +161,5 @@ print("p_red2=")
 print(p_red2)
 
 print("----------------------------")
+print("p_blue=")
+print(p_blue)

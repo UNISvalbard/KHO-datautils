@@ -30,7 +30,7 @@ def miss2spectral(missFile):
     TO DO: use data where the auroral blue emission line is
            also visible
     """
-
+    p_blue=np.poly1d([-0.0004351,0.1633,68.56])
     p_green=np.poly1d([-0.0003996, 0.1461,544])
     p_red=np.poly1d([-0.0003619, 0.1322,797.1])
     p_red2=np.poly1d([-0.0003952, 0.1534,816.3])
@@ -61,11 +61,13 @@ def miss2spectral(missFile):
 
     for alpha in scanangle:
         row=70+alpha
+        blueline=p_blue(row)
         greenline=p_green(row)
         redline=p_red(row)
         red2line=p_red2(row)
 
-        waves=np.polynomial.Polynomial.fit([557.7, 630.0, 636.4], [greenline,redline,red2line],2)
+        waves=np.polynomial.Polynomial.fit([427.8, 557.7, 630.0, 636.4], 
+                                           [blueline, greenline,redline,red2line],2)
 
         cols=waves(wavelengths) # Pixel columns corresponding to wavelengths
         thisrowvalues=im[row,:]
@@ -76,7 +78,7 @@ def miss2spectral(missFile):
 
 if __name__ == "__main__":
     missFile="MISS2-20251115-072315.png"
-
+    missFile="MISS2-20251113-050315.png"
     # Get the basename for the file for the plot title
     thisbasename=basename(missFile)
 
