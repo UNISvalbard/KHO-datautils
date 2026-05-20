@@ -15,7 +15,7 @@ import datetime as dt
 from PIL import Image, ImageDraw, ImageFont
 
 def oneThumbnail(imagefile,overWriteExisting=False):
-    auroraXpath=os.path.join('/','home','mikkos','Data','Quicklooks')
+    auroraXpath=os.path.join('/','home','mikkos','Data','QuicklooksDSLR')
     
     # The all-sky images use a strict filename convention
     # 
